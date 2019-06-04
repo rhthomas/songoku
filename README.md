@@ -27,7 +27,7 @@ python camera.py
 ## TODO
 
 - [x] Guess numbers every 10 frames (it still grabs every frame of video).
-- [] Complete README.md.
-- [] Create `main.py` file, rather than having to run `camera.py` (unclear that this is main until reading the source).
-- [] Make numbers less shaky (better contour grabbing?).
-- [] Make it so it only guesses the numbers every ~20 frames? Maybe guesses them really fast at the beginning and once it has it figured out it slows down.
+- [ ] Complete README.md.
+- [ ] Create `main.py` file, rather than having to run `camera.py` (unclear that this is main until reading the source).
+- [ ] Make numbers less shaky (better contour grabbing?).
+- [ ] Make it so it only guesses the numbers every ~20 frames? Maybe guesses them really fast at the beginning and once it has it figured out it slows down.
