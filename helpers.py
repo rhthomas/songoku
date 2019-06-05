@@ -5,12 +5,7 @@ import cv2
 
 def crop_from_points(img, corners, make_square=True):
 
-    cnt = np.array([
-        corners[0],
-        corners[1],
-        corners[2],
-        corners[3]
-        ])
+    cnt = np.array([corners[0], corners[1], corners[2], corners[3]])
 
     rect = cv2.minAreaRect(cnt)
     center, size, theta = rect
@@ -18,7 +13,7 @@ def crop_from_points(img, corners, make_square=True):
     # Angle correction
     if theta < -45:
         theta += 90
-    
+
     rect = (center, size, theta)
 
     box = cv2.boxPoints(rect)
@@ -30,8 +25,8 @@ def crop_from_points(img, corners, make_square=True):
     width = int(rect[1][0])
     height = int(rect[1][1])
 
-    src_pts = np.float32([corners[0],corners[1],corners[2],corners[3]])
-    dst_pts = np.float32([[0,0],[width,0],[0,height],[width,height]])
+    src_pts = np.float32([corners[0], corners[1], corners[2], corners[3]])
+    dst_pts = np.float32([[0, 0], [width, 0], [0, height], [width, height]])
 
     # the perspective transformation matrix
     M = cv2.getPerspectiveTransform(src_pts, dst_pts)
@@ -43,15 +38,16 @@ def crop_from_points(img, corners, make_square=True):
 
     if make_square is True:
         try:
-            warped = cv2.resize(warped, (max(width, height), max(width, height)), interpolation=cv2.INTER_CUBIC)
+            warped = cv2.resize(
+                warped,
+                (max(width, height), max(width, height)),
+                interpolation=cv2.INTER_CUBIC,
+            )
 
         except Exception as e:
             print(e)
 
-    transformation_data = {
-        'matrix' : M,
-        'original_shape': (height, width)
-    }
+    transformation_data = {"matrix": M, "original_shape": (height, width)}
 
     return warped, transformation_data
 
@@ -60,12 +56,16 @@ def perspective_transform(img, transformation_matrix, original_shape=None):
     warped = img
 
     if original_shape is not None:
-        if original_shape[0]>0 and original_shape[1]>0:
-            warped = cv2.resize(warped, (original_shape[1], original_shape[0]), interpolation=cv2.INTER_CUBIC)
+        if original_shape[0] > 0 and original_shape[1] > 0:
+            warped = cv2.resize(
+                warped,
+                (original_shape[1], original_shape[0]),
+                interpolation=cv2.INTER_CUBIC,
+            )
 
     white_image = np.zeros((640, 480, 3), np.uint8)
 
-    white_image[:,:,:] = 255
+    white_image[:, :, :] = 255
 
     # warped = cv2.warpPerspective(warped, transformation_matrix, (640, 480), borderMode=cv2.BORDER_TRANSPARENT)
     warped = cv2.warpPerspective(warped, transformation_matrix, (640, 480))
@@ -80,7 +80,9 @@ def blend_non_transparent(face_img, overlay_img):
     overlay_mask = cv2.threshold(gray_overlay, 1, 255, cv2.THRESH_BINARY)[1]
 
     # Let's shrink and blur it a little to make the transitions smoother...
-    overlay_mask = cv2.erode(overlay_mask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)))
+    overlay_mask = cv2.erode(
+        overlay_mask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+    )
     overlay_mask = cv2.blur(overlay_mask, (3, 3))
 
     # And the inverse mask, that covers all the black (background) pixels
@@ -107,10 +109,10 @@ def crop_minAreaRect(src, rect):
     if theta < -45:
         theta += 90
 
-    # Convert to int 
+    # Convert to int
     center, size = tuple(map(int, center)), tuple(map(int, size))
     # Get rotation matrix for rectangle
-    M = cv2.getRotationMatrix2D( center, theta, 1)
+    M = cv2.getRotationMatrix2D(center, theta, 1)
     # Perform rotation on src image
     dst = cv2.warpAffine(src, M, (src.shape[1], src.shape[0]))
     out = cv2.getRectSubPix(dst, size, center)
@@ -121,17 +123,25 @@ def resize_to_square(image, goal_dimension=28, border=2):
     height, width = image.shape[0], image.shape[1]
     smol = max(height, width)
 
-    proportion = goal_dimension/smol
+    proportion = goal_dimension / smol
 
     BLACK = [0, 0, 0]
-    constant = cv2.copyMakeBorder(image, border, border, border, border, cv2.BORDER_CONSTANT, value=BLACK)
+    constant = cv2.copyMakeBorder(
+        image, border, border, border, border, cv2.BORDER_CONSTANT, value=BLACK
+    )
     background = np.zeros((goal_dimension, goal_dimension), dtype=np.int)
-    resized = cv2.resize(constant, (int(round(width*proportion)), int(round(height*proportion))), interpolation=cv2.INTER_AREA)
-    
-    x_offset=(goal_dimension-resized.shape[1])//2
-    y_offset=(goal_dimension-resized.shape[0])//2
+    resized = cv2.resize(
+        constant,
+        (int(round(width * proportion)), int(round(height * proportion))),
+        interpolation=cv2.INTER_AREA,
+    )
 
-    background[y_offset:y_offset+resized.shape[0], x_offset:x_offset+resized.shape[1]] = resized
+    x_offset = (goal_dimension - resized.shape[1]) // 2
+    y_offset = (goal_dimension - resized.shape[0]) // 2
+
+    background[
+        y_offset : y_offset + resized.shape[0], x_offset : x_offset + resized.shape[1]
+    ] = resized
 
     final = background
     return np.uint8(final)
@@ -170,7 +180,7 @@ class Singleton:
             return self._instance
 
     def __call__(self):
-        raise TypeError('Singletons must be accessed through `instance()`.')
+        raise TypeError("Singletons must be accessed through `instance()`.")
 
     def __instancecheck__(self, inst):
         return isinstance(inst, self._decorated)

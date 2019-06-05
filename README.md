@@ -1,4 +1,5 @@
 # songoku
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 
 ### [v 0.1](https://www.youtube.com/watch?v=H4L9yENEQbI)
 Working release
