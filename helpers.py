@@ -68,7 +68,7 @@ def perspective_transform(img, transformation_matrix, original_shape=None):
     white_image[:, :, :] = 255
 
     # warped = cv2.warpPerspective(warped, transformation_matrix, (640, 480), borderMode=cv2.BORDER_TRANSPARENT)
-    warped = cv2.warpPerspective(warped, transformation_matrix, (640, 480))
+    warped = cv2.warpPerspective(warped, transformation_matrix, (1280, 720))
 
     return warped
 
